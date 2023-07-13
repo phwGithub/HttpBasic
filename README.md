@@ -56,3 +56,50 @@ TCP와 달리 UDP는 별다른 기능을 지원하지 않고 Port와 체크섬 �
 <br><br>
 IP는 기억하기 어렵고 바뀌기도 쉽다. 그래서 쉽게 알 수 있는 도메인 이름을 IP랑 매칭시켜 접근을 용이하게 할 수 있다. IP가 변경되도 도메인 이름이 바뀌지 않기 때문에 제공자만 IP를 교체하면 된다.
 <br><br>
+
+# URI와 웹 브라우저 요청 흐름
+
+URI (Uniform Resource Identifier) : 통합 자원 식별자
+
+Uniform : 리소스를 식별하는 통일된 방식
+
+Resource : 자원, URI로 식별할 수 있는 모든것
+
+Identifier : 다른 항목과 구분하는데 필요한 정보
+
+URL(Resource Locator) : 리소스가 있는 위치를 지정
+
+URN(Resource Name) : 리소스에 이름을 부여 ← 이름만으로 실제 리소스를 찾는 방법인 보편적 x
+
+URI ← URL + URN
+
+** URN은 거의 의미가 없으므로 URI와 URL은 거의 비슷하게 사용
+<br><br>
+**https://www.google.com/search?q=hello&hl=ko 를 브라우저 주소 창에 입력했을 때 벌어지는 일**
+
+1. DNS 서버에서 www.google.com 에 해당하는 IP를 찾고 포트를 파악한다 → HTTPS가 쓰는 443
+2. 1번에서 찾은 정보를 바탕으로 HTTP 요청 메시지를 작성한다.
+    
+    GET /search?q=hello&hl=ko HTTP/1.1
+   <br><br>
+    Host: www.google.com
+    
+4. socket 라이브러리가 TCP/IP 연결을 수립하고 위의 HTTP 요청 메시지를  OS 단에 존재하는 TCP/IP 계층에 전달한다.
+5. TCP/IP 계층에서 TCP/IP 패킷을 생성한다. 여기서 전달한 데이터가 HTTP 요청 메시지이다.
+6. TCP/IP 패킷이 목적지에 전달되고 서버에서 패킷을 뜯어 전달된 HTTP 요청 메시지를 확인한다.
+7. 서버에서 HTTP 응답 메시지를 작성한다.
+    
+    HTTP/1.1 200 OK
+   <br>
+    Content-Type: text/html;charset=UTF-8
+   <br>
+    Content-Length: 3423
+   <br>
+    html
+   <br>
+    body.../body
+   <br>
+    /html
+    <br>
+9. 이 응답 메시지를 마찬가지로 TCP/IP 패킷으로 싸서 클라이언트로 전송한다.
+10. 클라이언트에서도 패킷을 뜯어 응답 메시지를 확인하고 브라우저는 응답 메시지를 렌더링한다.
